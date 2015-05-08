@@ -20,18 +20,28 @@ class ReservationsSystemInterface:
             if command == "show_movies":
                 self._show_movies()
             elif command.startswith("show_movie_projections"):
-                parameters = command.split(" ")[1:]
-                movie_id = parameters[0]
-                date = parameters[1] if len(parameters) == 2 else None
+                splitted_command = command.split(" ")
 
-                self._show_movie_projections(movie_id, date)
+                if len(splitted_command) < 2:
+                    print("Movie id is required")
+                else:
+                    parameters = splitted_command[1:]
+                    movie_id = parameters[0]
+                    date = parameters[1] if len(parameters) == 2 else None
+
+                    self._show_movie_projections(movie_id, date)
             elif command == "make_reservation":
                 self._make_reservation()
             elif command.startswith("cancel_reservation"):
-                parameters = command.split(" ")[1:]
-                name = parameters[0]
+                splitted_command = command.split(" ")
 
-                self._cancel_reservation(name)
+                if len(splitted_command) < 2:
+                    print("Insert username to cancel reservation.")
+                else:
+                    parameters = splitted_command[1:]
+                    name = parameters[0]
+
+                    self._cancel_reservation(name)
             elif command == "help":
                 self._help()
             elif command == "exit":
@@ -84,6 +94,7 @@ class ReservationsSystemInterface:
                 print("This seat is already taken!")
             else:
                 reserved_seats.append(seat)
+                hall[seat[0] - 1][seat[1] - 1] = "X"
                 iterator += 1
 
         print("This is your reservation:")
@@ -95,12 +106,16 @@ class ReservationsSystemInterface:
 
         confirmed = False
         while not confirmed:
-            confirm = input("Step 5 (Confirm - type 'finalize') > ")
+            confirmation = input("Step 5 (Type 'finalize' to confirm or type 'reject' to reject) > ")
 
-            if confirm == "finalize":
+            if confirmation == "finalize":
                 for seat in reserved_seats:
                     self.reservations.add_reservation(username, projection_id, seat[0], seat[1])
                 confirmed = True
+
+            if confirmation == "reject":
+                print("This reservation was rejected.")
+                return
 
     def _cancel_reservation(self, name):
         user_reservations = self.reservations.get_reservations(name)
@@ -111,8 +126,8 @@ class ReservationsSystemInterface:
             for row in user_reservations:
                 print("[%d] - projection: %d, (%d, %d)" % row)
 
-            reservation_id = input("choose which reservation to cancel > ")
-            self.reservations.delete_reservation(reservation_id)
+            projection_id = input("choose reservation for which projection to cancel > ")
+            self.reservations.delete_reservation(name, projection_id)
 
             print("Reservation canceled!")
 

@@ -26,12 +26,12 @@ class Reservations:
         self.cursor.execute(sql, (username, ))
         return self.cursor.fetchall()
 
-    def delete_reservation(self, reservation_id):
+    def delete_reservation(self, name, projection_id):
         sql = """
-            DELETE FROM reservations WHERE id = ?
+            DELETE FROM reservations WHERE username = ? AND projection_id = ?
         """
 
-        self.cursor.execute(sql, (reservation_id, ))
+        self.cursor.execute(sql, (name, projection_id))
         self.conn.commit()
 
     def make_hall(self, projection_id):
