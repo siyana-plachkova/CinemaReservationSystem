@@ -14,6 +14,7 @@ class ReservationsSystemInterface:
         self.reservations = Reservations(self.db)
 
     def start(self):
+        self._help()
         while True:
             command = input("command: ")
 
